@@ -33,7 +33,7 @@ class HelloWorldController {
     @PostMapping("/chatgpt")
     public ResponseEntity<Object> chatgpt(@RequestBody Map<String, Object> request) {
         try {
-            String apiKey = "";
+            String apiKey = "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";
 
             if (!request.containsKey("input")) {
                 return new ResponseEntity<>(Map.of("error", "Invalid input"), HttpStatus.BAD_REQUEST);
