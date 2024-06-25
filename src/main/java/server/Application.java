@@ -4,18 +4,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import server.documents.User;
+import server.services.AuthService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @SpringBootApplication
+@EnableMongoRepositories(basePackages = "server")
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -25,8 +29,12 @@ public class Application {
 @RestController
 class HelloWorldController {
 
+    @Autowired
+    private AuthService authService;
+
     @GetMapping("/")
     public String hello() {
+        System.out.println("DEU CERTO!!!!");
         return "Hello, World!";
     }
 
@@ -78,6 +86,26 @@ class HelloWorldController {
             return ResponseEntity.ok(Map.of("response", output));
         } catch (Exception e) {
             return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+        boolean isAuthenticated = authService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        if (isAuthenticated) {
+            return ResponseEntity.ok("Login successful");
+        } else {
+            return ResponseEntity.status(401).body("Invalid credentials");
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
+        User newUser = authService.register(registerRequest.getUsername(), registerRequest.getPassword(), registerRequest.getName());
+        if (newUser != null) {
+            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed");
         }
     }
 }

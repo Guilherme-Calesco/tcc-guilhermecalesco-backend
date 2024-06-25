@@ -1,26 +1,25 @@
 package server;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.MongoClientFactoryBean;
+import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 
 @Configuration
 public class MongoConfig {
 
     @Bean
-    public MongoClientFactoryBean mongo() {
-        MongoClientFactoryBean mongo = new MongoClientFactoryBean();
-        mongo.setHost("mongodb+srv");
-        return mongo;
+    public SimpleMongoClientDatabaseFactory mongoDbFactory() {
+        String connectionString = "mongodb+srv://guilhermecalesco:knIRClvV4IhaN7o7@cluster01.lcjrzbg.mongodb.net/tcc-guilherme?retryWrites=true&w=majority&appName=Cluster01";
+        return new SimpleMongoClientDatabaseFactory(connectionString);
     }
 
     @Bean
-    public MongoTemplate mongoTemplate() throws Exception {
-        return new MongoTemplate(MongoClients.create("mongodb+srv://guilhermecalesco:jrays9932" +
-                "@cluster01.lcjrzbg.mongodb.net/" +
-                "?retryWrites=true&w=majority&appName=Cluster01"),
-                "yourdatabase");
+    public MongoTemplate mongoTemplate() {
+        return new MongoTemplate(mongoDbFactory());
     }
 }
