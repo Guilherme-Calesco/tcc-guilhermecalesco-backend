@@ -21,7 +21,7 @@ public class QuestionService {
     @Autowired
     private QuestionRepository questionRepository;
 
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "API_KEY";
     private static final int MAX_ATTEMPTS = 3;
     private static final int TIMEOUT_MS = 10000; // 10 segundos
 
