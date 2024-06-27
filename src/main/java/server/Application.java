@@ -1,9 +1,5 @@
 package server;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,9 +12,7 @@ import server.documents.User;
 import server.services.AuthService;
 import server.services.QuestionService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @SpringBootApplication
 @EnableMongoRepositories(basePackages = "server")
@@ -29,16 +23,13 @@ public class Application {
 }
 
 @RestController
-class HelloWorldController {
+class GeneralController {
 
     @Autowired
     private AuthService authService;
 
-    @GetMapping("/")
-    public String hello() {
-        System.out.println("DEU CERTO!!!!");
-        return "Hello, World!";
-    }
+    @Autowired
+    private QuestionService questionService;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
@@ -59,10 +50,6 @@ class HelloWorldController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed");
         }
     }
-
-
-    @Autowired
-    private QuestionService questionService;
 
     @PostMapping("/questions")
     public ResponseEntity<List<Question>> createQuestion(@RequestBody Question question) {

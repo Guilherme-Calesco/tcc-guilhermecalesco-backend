@@ -18,7 +18,7 @@ public class QuestionService {
     @Autowired
     private QuestionRepository questionRepository;
 
-    private static final String API_KEY = "";
+    private static final String API_KEY = "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";
     private static final int MAX_ATTEMPTS = 3;
     private static final int TIMEOUT_MS = 30000; // 30 segundos
 
@@ -38,7 +38,7 @@ public class QuestionService {
     }
 
     public List<Question> getAllQuestions() {
-        return questionRepository.findAll();
+        return questionRepository.findAllByOrderByCreatedAtDesc();
     }
 
     private String generatePrompt(Question question) {
@@ -58,18 +58,16 @@ public class QuestionService {
         body.put("model", "gpt-4-turbo-2024-04-09");
         body.put("messages", List.of(
                 Map.of("role", "system", "content", "Você irá trabalhar como uma API de gerar questões para provas. " +
-                        "As questões devem ser pertinentes ao conteúdo que irei enviar, " +
-                        "e ser sempre nivelado com o curso e o ano do aluno. Ensino Fundamental são crianças, e até o 2º ano estão em fase de alfabetização. " +
-                        "Já ensino médio ou cursos superiores podem ter perguntas pertinentes ao seu curso e ano letivo. " +
-                        "Use sempre perguntas que são padrão de provas das matérias, " +
-                        "e o seu retorno deve ser sempre no formato a seguir, importante, retorne apenas o JSONArray, nada mais: [{\n" +
+                        "As questões devem ser pertinentes ao curso e ao ano letivo que a prova será aplicada " +
+                        "e sempre ter os tópicos como assunto da questão, ainda dentro da matéria, curso e ano letivo"+
+                        "O seu retorno deve ser sempre no formato a seguir, importante, retorne apenas o JSONArray, nada mais: [{\n" +
                         "  \"question\": \"PERGUNTA_N\",\n" +
                         "  \"type\": \"OBJETIVA/DISSERTATIVA\",\n" +
                         "  \"tags\": [\"TAG_1\", \"TAG_2\", \"TAG3\", ...],\n" +
                         "  \"materia\": \"NOME_DA_MATERIA\",\n" +
                         "  \"curso\": \"NOME_DO_CURSO\",\n" +
                         "  \"year\": \"ANO_LETIVO\"\n" +
-                        "  \"options\": \"[OPT1, OPT2, OPT3]\" //quando objetiva\n" +
+                        "  \"options\": [\"OPT1\", \"OPT2\", \"OPT3\"] //quando objetiva\n" +
                         "}]\n"),
                 Map.of("role", "user", "content", prompt)
         ));
@@ -129,7 +127,7 @@ public class QuestionService {
             newQuestion.setYear((String) q.get("year"));
             newQuestion.setTopic(String.join(", ", (List<String>) q.get("tags")));
             newQuestion.setOptions(Objects.nonNull(q.get("options"))?(List<String>) q.get("options"):null);
-
+            newQuestion.setCreatedAt(new Date(System.currentTimeMillis()));
             System.out.println("Processed Question: " + newQuestion);
 
             questions.add(newQuestion);

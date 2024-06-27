@@ -3,6 +3,7 @@ package server.documents;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
 import java.util.List;
 
 @Document(collection = "questions")
@@ -24,6 +25,15 @@ public class Question {
     private List<String> tags;
     // Getters e setters
     private List<String> options;
+    private Date createdAt;
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
 
     public List<String> getOptions() {
         return options;
@@ -112,4 +122,5 @@ public class Question {
     public void setQuestionObjet(int questionObjet) {
         this.questionObjet = questionObjet;
     }
+
 }
